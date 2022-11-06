@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="mdptoolbox-hiive",
-    version="4.0.3.2",
+    version="4.0.3.3",
     author="Andrew Rollings (originally Steven A. W. Cordwell)",
     author_email="a.rollings@hiive.com",
     url="https://github.com/hiive/hiivemdptoolbox",
