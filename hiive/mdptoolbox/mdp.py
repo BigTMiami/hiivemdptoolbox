@@ -1223,7 +1223,7 @@ class QLearning(MDP):
                 except IndexError:
                     r = self.R[s]
 
-            running_reward.append[r]
+            running_reward.append(r)
 
             # Q[s, a] = Q[s, a] + alpha*(R + gamma*Max[Q(s’, A)] - Q[s, a])
             # Updating the value of Q
