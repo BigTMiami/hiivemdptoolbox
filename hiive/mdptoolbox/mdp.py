@@ -1187,7 +1187,7 @@ class QLearning(MDP):
             s = _np.random.randint(0, self.S)
         reset_s = False
         run_stats = []
-        running_reward = 0
+        running_reward = []
         for n in range(1, self.max_iter + 1):
 
             take_run_stat = n % self.run_stat_frequency == 0 or n == self.max_iter
@@ -1223,7 +1223,7 @@ class QLearning(MDP):
                 except IndexError:
                     r = self.R[s]
 
-            running_reward += r
+            running_reward.append[r]
 
             # Q[s, a] = Q[s, a] + alpha*(R + gamma*Max[Q(s’, A)] - Q[s, a])
             # Updating the value of Q
@@ -1266,8 +1266,7 @@ class QLearning(MDP):
                 Alpha decay and min ?
                 And alpha and epsilon at each iteration?
                 """
-                run_stats[-1]["running_reward"] = running_reward
-                running_reward = 0
+                run_stats[-1]["running_reward"] = sum(running_reward[-1000:])
                 self.run_stats.append(run_stats[-1])
                 run_stats = []
 
