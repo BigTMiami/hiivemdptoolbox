@@ -1052,6 +1052,10 @@ class QLearning(MDP):
         By default we run a check on the ``transitions`` and ``rewards``
         arguments to make sure they describe a valid MDP. You can set this
         argument to True in order to skip this check.
+    ADDED BY AFM
+    start_from_begining: bool
+        Only start in 0 state instead of random state to better model
+        actually learning an environment
 
     Data Attributes
     ---------------
@@ -1118,6 +1122,7 @@ class QLearning(MDP):
         skip_check=False,
         iter_callback=None,
         run_stat_frequency=None,
+        start_from_begining=False,
     ):
         # Initialise a Q-learning MDP.
 
@@ -1136,6 +1141,7 @@ class QLearning(MDP):
         self.P = self._computeTransition(transitions)
 
         self.R = reward
+        self.start_from_begining = start_from_begining
 
         self.alpha = _np.clip(alpha, 0.0, 1.0)
         self.alpha_start = self.alpha
@@ -1175,7 +1181,10 @@ class QLearning(MDP):
         self.time = _time.time()
 
         # initial state choice
-        s = _np.random.randint(0, self.S)
+        if self.start_from_begining:
+            s = 0
+        else:
+            s = _np.random.randint(0, self.S)
         reset_s = False
         run_stats = []
         for n in range(1, self.max_iter + 1):
@@ -1183,7 +1192,9 @@ class QLearning(MDP):
             take_run_stat = n % self.run_stat_frequency == 0 or n == self.max_iter
 
             # Reinitialisation of trajectories every 100 transitions
-            if (self.iter_callback is None and (n % 100) == 0) or reset_s:
+            if (
+                (self.iter_callback is None and (n % 100) == 0) or reset_s
+            ) and not self.start_from_begining:
                 s = _np.random.randint(0, self.S)
 
             # Action choice : greedy with increasing probability
