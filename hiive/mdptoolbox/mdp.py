@@ -1310,7 +1310,7 @@ class QLearning(MDP):
             "Iteration": i,
             "Value": v.copy(),
             "Policy": p.copy(),
-            "S Freq": self.S_freq,
+            "S_Freq": self.S_freq.copy(),
         }
         return run_stat
 
