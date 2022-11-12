@@ -1494,6 +1494,7 @@ class QLearningEpisodic(MDP):
         self.time = _time.time()
 
         episode = 1
+        next_episode_stat = self.episode_stat_frequency
 
         # initial state choice
         s = self.start_state
@@ -1585,12 +1586,13 @@ class QLearningEpisodic(MDP):
                 self.run_stats.append(run_stats[-1])
                 run_stats = []
 
-            if episode % self.episode_stat_frequency == 0 or n == self.max_iter:
+            if episode == next_episode_stat or n == self.max_iter:
                 episode_stats.append(
                     self._update_episode_stats(
                         episode, n, error, p, v, running_reward, self.S_freq
                     )
                 )
+                next_episode_stat += self.episode_stat_frequency
 
             self.alpha *= self.alpha_decay
             if self.alpha < self.alpha_min:
