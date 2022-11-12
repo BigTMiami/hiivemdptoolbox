@@ -1493,7 +1493,7 @@ class QLearningEpisodic(MDP):
 
         self.time = _time.time()
 
-        episode = 0
+        episode = 1
 
         # initial state choice
         s = self.start_state
