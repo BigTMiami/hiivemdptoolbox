@@ -1466,7 +1466,7 @@ class QLearningEpisodic(MDP):
         episode_stat = {
             "Episode": episode,
             "Iteration": iteration,
-            "Episode Iterations": episode_iterations,
+            "Iterations per Episode": episode_iterations,
             "Error": error,
             "Time": _time.time() - self.time,
             "Alpha": self.alpha,
@@ -1478,7 +1478,7 @@ class QLearningEpisodic(MDP):
             "Value": v.copy(),
             "Policy": p.copy(),
             "S_Freq": episode_S_freq,
-            "episode_reward": sum(episode_reward) / self.episode_stat_frequency,
+            "episode_reward": episode_reward,
         }
         return episode_stat
 
@@ -1598,12 +1598,12 @@ class QLearningEpisodic(MDP):
                     self._update_episode_stats(
                         episode,
                         n,
-                        n - last_episode_iteration,
+                        (n - last_episode_iteration) / self.episode_stat_frequency,
                         error,
                         p,
                         v,
                         self.S_freq - last_episode_frequencies,
-                        episode_reward,
+                        sum(episode_reward) / self.episode_stat_frequency,
                     )
                 )
                 episode_reward = []
