@@ -1460,10 +1460,13 @@ class QLearningEpisodic(MDP):
     def _next_state(self, s, a):
         return _np.random.choice(self.S_list, p=self.P[a][s])
 
-    def _update_episode_stats(self, episode, i, error, p, v, S_freq, episode_reward):
+    def _update_episode_stats(
+        self, episode, iteration, episode_iterations, error, p, v, S_freq, episode_reward
+    ):
         episode_stat = {
             "Episode": episode,
-            "Iteration": i,
+            "Iteration": iteration,
+            "Episode Iterations": episode_iterations,
             "Error": error,
             "Time": _time.time() - self.time,
             "Alpha": self.alpha,
@@ -1504,6 +1507,7 @@ class QLearningEpisodic(MDP):
         episode_stats = []
         iteration_reward = []
         episode_reward = []
+        last_episode_iteration = 0
         for n in range(1, self.max_iter + 1):
 
             # Action choice : greedy with increasing probability
@@ -1593,6 +1597,7 @@ class QLearningEpisodic(MDP):
                     self._update_episode_stats(
                         episode,
                         n,
+                        n - last_episode_iteration,
                         error,
                         p,
                         v,
@@ -1601,6 +1606,7 @@ class QLearningEpisodic(MDP):
                     )
                 )
                 episode_reward = []
+                last_episode_iteration = n
                 next_episode_stat += self.episode_stat_frequency
 
             self.alpha *= self.alpha_decay
