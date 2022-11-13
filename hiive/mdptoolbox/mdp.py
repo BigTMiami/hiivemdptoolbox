@@ -1475,7 +1475,7 @@ class QLearningEpisodic(MDP):
             "Value": v.copy(),
             "Policy": p.copy(),
             "S_Freq": S_freq.copy(),
-            "episode_reward": sum(episode_reward),
+            "episode_reward": sum(episode_reward) / self.episode_stat_frequency,
         }
         return episode_stat
 
