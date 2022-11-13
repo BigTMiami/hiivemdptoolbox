@@ -1460,7 +1460,7 @@ class QLearningEpisodic(MDP):
     def _next_state(self, s, a):
         return _np.random.choice(self.S_list, p=self.P[a][s])
 
-    def _update_episode_stats(self, episode, i, error, p, v, running_reward, S_freq):
+    def _update_episode_stats(self, episode, i, error, p, v, S_freq, episode_reward):
         episode_stat = {
             "Episode": episode,
             "Iteration": i,
@@ -1475,7 +1475,7 @@ class QLearningEpisodic(MDP):
             "Value": v.copy(),
             "Policy": p.copy(),
             "S_Freq": S_freq.copy(),
-            "running_reward": sum(running_reward[-1000:]),
+            "episode_reward": sum(episode_reward),
         }
         return episode_stat
 
@@ -1502,7 +1502,8 @@ class QLearningEpisodic(MDP):
         reset_s = False
         run_stats = []
         episode_stats = []
-        running_reward = []
+        iteration_reward = []
+        episode_reward = []
         for n in range(1, self.max_iter + 1):
 
             # Action choice : greedy with increasing probability
@@ -1525,7 +1526,8 @@ class QLearningEpisodic(MDP):
                 except IndexError:
                     r = self.R[s]
 
-            running_reward.append(r)
+            iteration_reward.append(r)
+            episode_reward.append(r)
 
             # Q[s, a] = Q[s, a] + alpha*(R + gamma*Max[Q(s’, A)] - Q[s, a])
             # Updating the value of Q
@@ -1582,16 +1584,23 @@ class QLearningEpisodic(MDP):
                 Alpha decay and min ?
                 And alpha and epsilon at each iteration?
                 """
-                run_stats[-1]["running_reward"] = sum(running_reward[-1000:])
+                run_stats[-1]["iteration_reward"] = sum(iteration_reward[-1000:])
                 self.run_stats.append(run_stats[-1])
                 run_stats = []
 
             if episode == next_episode_stat or n == self.max_iter:
                 episode_stats.append(
                     self._update_episode_stats(
-                        episode, n, error, p, v, running_reward, self.S_freq
+                        episode,
+                        n,
+                        error,
+                        p,
+                        v,
+                        self.S_freq,
+                        episode_reward,
                     )
                 )
+                episode_reward = []
                 next_episode_stat += self.episode_stat_frequency
 
             self.alpha *= self.alpha_decay
