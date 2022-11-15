@@ -1549,7 +1549,6 @@ class QLearningEpisodic(MDP):
             self.policy = p
 
             self.S_freq[s, a] += 1
-            run_stats.append(self._build_run_stat(i=n, s=s, a=a, r=r, p=p, v=v, error=error))
 
             if self.iter_callback is not None:
                 reset_s = self.iter_callback(s, a, s_new)
@@ -1561,37 +1560,6 @@ class QLearningEpisodic(MDP):
                 episode += 1
             else:
                 s = s_new
-
-            # Take stat on episode
-            take_run_stat = n % self.run_stat_frequency == 0 or n == self.max_iter
-
-            if take_run_stat:
-                error_cumulative.append(error)
-
-                if len(error_cumulative) == 100:
-                    self.error_mean.append(_np.mean(error_cumulative))
-                    error_cumulative = []
-
-                v_cumulative.append(v)
-
-                if len(v_cumulative) == 100:
-                    self.v_mean.append(_np.mean(v_cumulative, axis=1))
-                    v_cumulative = []
-
-                if len(self.p_cumulative) == 0 or not _np.array_equal(
-                    self.policy, self.p_cumulative[-1][1]
-                ):
-                    self.p_cumulative.append((n, self.policy.copy()))
-                """
-                Rewards,errors time at each iteration I think
-                But that’s for all of them and steps per episode?
-
-                Alpha decay and min ?
-                And alpha and epsilon at each iteration?
-                """
-                run_stats[-1]["iteration_reward"] = sum(iteration_reward[-1000:])
-                self.run_stats.append(run_stats[-1])
-                run_stats = []
 
             if episode == next_episode_stat or n == self.max_iter:
                 episode_stats.append(
@@ -1625,9 +1593,8 @@ class QLearningEpisodic(MDP):
             self.v_mean.append(_np.mean(v_cumulative, axis=1))
         if len(error_cumulative) > 0:
             self.error_mean.append(_np.mean(error_cumulative))
-        if self.run_stats is None or len(self.run_stats) == 0:
-            self.run_stats = run_stats
-        return self.run_stats, episode_stats
+
+        return episode_stats
 
     def _build_run_stat(self, i, a, error, p, r, s, v):
         run_stat = {
